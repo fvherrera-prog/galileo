@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="El Fogón, parrilla argentina. Tradición, sabor y buenos momentos.">
+  <title>El Fogón | Parrilla Argentina</title>
+  <style>
+    :root {
+      --bg: #171311;
+      --panel: #211a16;
+      --panel-light: #2b211b;
+      --cream: #fff3e2;
+      --muted: #d0bba7;
+      --fire: #bd4b2d;
+      --fire-light: #e36a3e;
+      --gold: #d9ad68;
+      --line: rgba(255, 243, 226, .14);
+      --shadow: 0 18px 45px rgba(0,0,0,.28);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+    body {
+      margin: 0;
+      color: var(--cream);
+      background: var(--bg);
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.6;
+    }
+    a { color: inherit; text-decoration: none; }
+    button, input, select, textarea { font: inherit; }
+    button, .button { cursor: pointer; }
+    img { display: block; max-width: 100%; }
+
+    .topbar {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .85rem 1.4rem;
+      background: rgba(23,19,17,.92);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(12px);
+    }
+    .brand-small {
+      color: var(--gold);
+      font-family: Georgia, serif;
+      font-size: 1.1rem;
+      font-weight: bold;
+      letter-spacing: .12em;
+    }
+    .topbar nav { display: flex; align-items: center; gap: 1.25rem; }
+    .topbar nav a { color: var(--muted); font-size: .92rem; transition: color .2s; }
+    .topbar nav a:hover { color: var(--gold); }
+    .menu-toggle {
+      display: none;
+      color: var(--cream);
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: 8px;
+      padding: .45rem .7rem;
+    }
+
+    main { padding-top: 62px; }
+    .hero {
+      position: relative;
+      min-height: min(760px, 88vh);
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      isolation: isolate;
+      background: #2a1a12;
+    }
+    .slides, .slide, .hero-shade { position: absolute; inset: 0; }
+    .slide {
+      opacity: 0;
+      background-size: cover;
+      background-position: center;
+      transform: scale(1.04);
+      transition: opacity 1s ease, transform 6s ease;
+    }
+    .slide.active { opacity: 1; transform: scale(1); }
+    .hero-shade {
+      z-index: 1;
+      background: linear-gradient(90deg, rgba(12,9,7,.72), rgba(12,9,7,.25), rgba(12,9,7,.68)),
+                  linear-gradient(0deg, rgba(12,9,7,.78), transparent 60%);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      width: min(900px, 90%);
+      padding: 5rem 1rem 7rem;
+      text-align: center;
+    }
+    .eyebrow {
+      margin: 0 0 .7rem;
+      color: var(--gold);
+      font-size: .82rem;
+      font-weight: bold;
+      letter-spacing: .24em;
+      text-transform: uppercase;
+    }
+    h1, h2, h3 { font-family: Georgia, 'Times New Roman', serif; line-height: 1.12; }
+    h1 {
+      margin: 0;
+      font-size: clamp(3.5rem, 10vw, 7.8rem);
+      letter-spacing: .07em;
+      text-shadow: 0 6px 30px rgba(0,0,0,.5);
+    }
+    .hero-subtitle {
+      margin: 1rem auto 1.8rem;
+      max-width: 650px;
+      color: #fff1df;
+      font-family: Georgia, serif;
+      font-size: clamp(1.1rem, 2.6vw, 1.65rem);
+      font-style: italic;
+    }
+    .hero-actions { display: flex; justify-content: center; gap: .85rem; flex-wrap: wrap; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      min-height: 46px;
+      padding: .75rem 1.25rem;
+      border: 1px solid transparent;
+      border-radius: 5px;
+      font-weight: bold;
+      transition: transform .2s, background .2s;
+    }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { color: white; background: var(--fire); }
+    .button-primary:hover { background: var(--fire-light); }
+    .button-outline { border-color: rgba(255,243,226,.65); background: rgba(0,0,0,.18); }
+    .button-outline:hover { background: rgba(255,255,255,.12); }
+    .carousel-arrow {
+      position: absolute;
+      z-index: 3;
+      top: 50%;
+      width: 46px;
+      height: 46px;
+      display: grid;
+      place-items: center;
+      color: white;
+      background: rgba(0,0,0,.38);
+      border: 1px solid rgba(255,255,255,.45);
+      border-radius: 50%;
+      font-size: 1.4rem;
+      transform: translateY(-50%);
+    }
+    .carousel-arrow:hover { background: var(--fire); }
+    .carousel-arrow.prev { left: 1.25rem; }
+    .carousel-arrow.next { right: 1.25rem; }
+    .dots {
+      position: absolute;
+      z-index: 3;
+      left: 0; right: 0; bottom: 1.6rem;
+      display: flex; justify-content: center; gap: .55rem;
+    }
+    .dot {
+      width: 9px; height: 9px; padding: 0;
+      border: 0; border-radius: 50%;
+      background: rgba(255,255,255,.55);
+    }
+    .dot.active { width: 27px; border-radius: 8px; background: var(--gold); }
+
+    .info-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+    .info-item {
+      padding: 1.6rem 1.1rem;
+      text-align: center;
+      border-right: 1px solid var(--line);
+    }
+    .info-item:last-child { border-right: 0; }
+    .info-icon { display: block; margin-bottom: .35rem; color: var(--gold); font-size: 1.45rem; }
+    .info-item strong { display: block; margin-bottom: .25rem; }
+    .info-item span, .info-item a { color: var(--muted); font-size: .9rem; }
+
+    .section { padding: 5.2rem max(1.25rem, calc((100% - 1120px) / 2)); }
+    .section-heading { max-width: 700px; margin: 0 auto 2.5rem; text-align: center; }
+    .section-heading h2 { margin: .35rem 0 .8rem; font-size: clamp(2.2rem, 5vw, 3.5rem); }
+    .section-heading p { margin: 0; color: var(--muted); }
+    .section-label { color: var(--gold); font-size: .78rem; font-weight: bold; letter-spacing: .2em; text-transform: uppercase; }
+    .menu-section { background: #201915; }
+    .menu-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.2rem; }
+    .menu-card {
+      overflow: hidden;
+      background: var(--panel-light);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+    }
+    .menu-card img { width: 100%; height: 210px; object-fit: cover; }
+    .menu-card-body { padding: 1.15rem; }
+    .menu-card-top { display: flex; justify-content: space-between; gap: .75rem; align-items: start; }
+    .menu-card h3 { margin: 0; font-size: 1.3rem; }
+    .price { color: var(--gold); font-weight: bold; white-space: nowrap; }
+    .menu-card p { margin: .7rem 0 0; color: var(--muted); font-size: .92rem; }
+    .note { margin: 1.5rem 0 0; color: var(--muted); font-size: .85rem; text-align: center; }
+
+    .about-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 3rem; }
+    .about-image { width: 100%; min-height: 360px; height: 100%; object-fit: cover; border-radius: 10px; }
+    .about-copy h2 { margin: .5rem 0 1rem; font-size: clamp(2.2rem, 4vw, 3.4rem); }
+    .about-copy p { color: var(--muted); }
+    .about-points { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 1.5rem; }
+    .about-point { padding: .9rem; border-left: 3px solid var(--fire); background: var(--panel); }
+    .about-point strong { display: block; }
+    .about-point span { color: var(--muted); font-size: .86rem; }
+
+    .reservation-section { background: #201915; }
+    .reservation-wrap { display: grid; grid-template-columns: .85fr 1.15fr; gap: 2rem; align-items: start; }
+    .reservation-copy h2 { margin: .5rem 0 1rem; font-size: clamp(2.2rem, 4vw, 3.3rem); }
+    .reservation-copy p { color: var(--muted); }
+    .contact-list { display: grid; gap: .85rem; margin-top: 1.5rem; }
+    .contact-row { display: flex; gap: .8rem; align-items: start; color: var(--muted); }
+    .contact-row strong { display: block; color: var(--cream); }
+    .reservation-form {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+      padding: 1.5rem; background: var(--panel-light);
+      border: 1px solid var(--line); border-radius: 10px;
+    }
+    .field { display: grid; gap: .4rem; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { color: var(--muted); font-size: .9rem; }
+    .field input, .field select, .field textarea {
+      width: 100%; min-width: 0; padding: .8rem .85rem;
+      color: var(--cream); background: #191310;
+      border: 1px solid rgba(255,243,226,.2); border-radius: 5px;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { outline: 2px solid var(--gold); outline-offset: 1px; }
+    .field select option { background: #191310; }
+    .form-message { grid-column: 1 / -1; min-height: 1.4em; margin: 0; color: var(--gold); font-size: .9rem; }
+    .reservation-form .button { grid-column: 1 / -1; width: 100%; }
+
+    footer { padding: 2rem 1.25rem; text-align: center; background: #100d0b; border-top: 1px solid var(--line); }
+    .footer-brand { color: var(--gold); font-family: Georgia, serif; font-size: 1.5rem; letter-spacing: .1em; }
+    footer p { margin: .5rem 0; color: var(--muted); font-size: .9rem; }
+    .socials { display: flex; justify-content: center; gap: 1rem; margin: 1rem 0; }
+    .socials a { color: var(--cream); border-bottom: 1px solid var(--gold); }
+    .back-top { position: fixed; right: 1rem; bottom: 1rem; z-index: 10; display: none; padding: .65rem .85rem; color: white; background: var(--fire); border: 0; border-radius: 50%; box-shadow: var(--shadow); }
+    .back-top.visible { display: block; }
+
+    @media (max-width: 850px) {
+      .info-strip { grid-template-columns: repeat(2, 1fr); }
+      .info-item:nth-child(2) { border-right: 0; }
+      .info-item:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+      .menu-grid { grid-template-columns: repeat(2, 1fr); }
+      .about-grid, .reservation-wrap { grid-template-columns: 1fr; }
+      .about-image { min-height: 280px; max-height: 420px; }
+    }
+    @media (max-width: 600px) {
+      .topbar { padding: .75rem 1rem; }
+      .menu-toggle { display: inline-flex; }
+      .topbar nav {
+        position: absolute; top: calc(100% + 1px); left: 0; right: 0;
+        display: none; flex-direction: column; align-items: stretch; gap: 0;
+        padding: .5rem 1rem 1rem; background: rgba(23,19,17,.98);
+        border-bottom: 1px solid var(--line);
+      }
+      .topbar nav.open { display: flex; }
+      .topbar nav a { padding: .75rem .2rem; border-bottom: 1px solid var(--line); }
+      main { padding-top: 56px; }
+      .hero { min-height: 650px; }
+      .hero-content { padding: 4rem .4rem 6rem; }
+      .carousel-arrow { width: 38px; height: 38px; font-size: 1.15rem; }
+      .carousel-arrow.prev { left: .65rem; }
+      .carousel-arrow.next { right: .65rem; }
+      .info-item { padding: 1.2rem .6rem; }
+      .section { padding: 3.8rem 1rem; }
+      .menu-grid { grid-template-columns: 1fr; }
+      .menu-card img { height: 230px; }
+      .about-points { grid-template-columns: 1fr; }
+      .reservation-form { grid-template-columns: 1fr; padding: 1rem; }
+      .field.full, .form-message, .reservation-form .button { grid-column: auto; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand-small" href="#inicio" aria-label="El Fogón, inicio">EL FOGÓN</a>
+    <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="mainNav">☰ Menú</button>
+    <nav id="mainNav" aria-label="Navegación principal">
+      <a href="#reservar">Reservar</a>
+      <a href="#menu">Menú</a>
+      <a href="#contacto">Contacto</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio" aria-label="Presentación de El Fogón">
+      <div class="slides" aria-hidden="true">
+        <div class="slide active" style="background-image:url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=2000&q=85')"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=2000&q=85')"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=2000&q=85')"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=2000&q=85')"></div>
+        <div class="slide" style="background-image:url('https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=2000&q=85&sat=-30')"></div>
+      </div>
+      <div class="hero-shade"></div>
+      <button class="carousel-arrow prev" id="prevSlide" aria-label="Imagen anterior">‹</button>
+      <div class="hero-content">
+        <img class="hero-logo" src="img/logoblanco.png" alt="El Fogón, parrilla argentina">
+        <p class="hero-subtitle">El auténtico sabor de la parrilla.</p>
+          <a class="button button-primary" href="#reservar">Reservar una mesa</a>
+          <a class="button button-outline" href="#menu">Descubrir el menú</a>
+        </div>
+      </div>
+      <button class="carousel-arrow next" id="nextSlide" aria-label="Imagen siguiente">›</button>
+      <div class="dots" id="carouselDots" aria-label="Elegir imagen">
+        <button class="dot active" aria-label="Mostrar imagen 1"></button>
+        <button class="dot" aria-label="Mostrar imagen 2"></button>
+        <button class="dot" aria-label="Mostrar imagen 3"></button>
+        <button class="dot" aria-label="Mostrar imagen 4"></button>
+        <button class="dot" aria-label="Mostrar imagen 5"></button>
+      </div>
+    </section>
+
+    <section class="info-strip" id="contacto" aria-label="Información del restaurante">
+      <div class="info-item">
+        <span class="info-icon" aria-hidden="true">◷</span>
+        <strong>Horarios</strong>
+        <span>Mar. a dom. · 12:00–15:00<br>20:00–00:00</span>
+      </div>
+      <div class="info-item">
+        <span class="info-icon" aria-hidden="true">⌖</span>
+        <strong>Dirección</strong>
+        <span>Av. Eva Perón 123, Buenos Aires</span>
+      </div>
+      <div class="info-item">
+        <span class="info-icon" aria-hidden="true">☎</span>
+        <strong>Contacto</strong>
+        <a href="tel:+540000000000">+54 000 0000-0000</a>
+      </div>
+      <div class="info-item">
+        <span class="info-icon" aria-hidden="true">◎</span>
+        <strong>Seguinos</strong>
+        <span><a href="#redes">Instagram · Facebook</a></span>
+      </div>
+    </section>
+
+    <section class="section menu-section" id="menu">
+      <div class="section-heading">
+        <span class="section-label">De nuestra parrilla a tu mesa</span>
+        <h2>Sabores que reúnen</h2>
+        <p>Una selección de clásicos para disfrutar en buena compañía.</p>
+      </div>
+      <div class="menu-grid">
+        <article class="menu-card">
+          <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=900&q=80" alt="Carne asada a la parrilla" loading="lazy">
+          <div class="menu-card-body">
+            <div class="menu-card-top"><h3>Parrillada para compartir</h3><span class="price">$00.000</span></div>
+            <p>Selección de cortes, chorizo, morcilla y guarnición de la casa.</p>
+          </div>
+        </article>
+        <article class="menu-card">
+          <img src="https://images.unsplash.com/photo-1558030006-450675393462?auto=format&fit=crop&w=900&q=80" alt="Corte de carne asado" loading="lazy">
+          <div class="menu-card-body">
+            <div class="menu-card-top"><h3>Ojo de bife</h3><span class="price">$00.000</span></div>
+            <p>Corte a la parrilla, cocinado a tu gusto.</p>
+          </div>
+        </article>
+        <article class="menu-card">
+          <img src="https://images.unsplash.com/photo-1529193591184-b1d58069ecdd?auto=format&fit=crop&w=900&q=80" alt="Hamburguesa con guarnición" loading="lazy">
+          <div class="menu-card-body">
+            <div class="menu-card-top"><h3>Especial de la casa</h3><span class="price">$00.000</span></div>
+            <p>Una opción abundante con el toque especial de El Fogón.</p>
+          </div>
+        </article>
+        <article class="menu-card">
+          <img src="https://images.unsplash.com/photo-1547592180-85f173990554?auto=format&fit=crop&w=900&q=80" alt="Guarnición fresca" loading="lazy">
+          <div class="menu-card-body">
+            <div class="menu-card-top"><h3>Ensalada de estación</h3><span class="price">$0.000</span></div>
+            <p>Vegetales frescos y aderezo de la casa.</p>
+          </div>
+        </article>
+        <article class="menu-card">
+          <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?auto=format&fit=crop&w=900&q=80" alt="Pizza recién horneada" loading="lazy">
+          <div class="menu-card-body">
+            <div class="menu-card-top"><h3>Provoleta y entrada</h3><span class="price">$0.000</span></div>
+            <p>El comienzo ideal para una comida entre amigos.</p>
+          </div>
+        </article>
+        <article class="menu-card">
+          <img src="img/flan.jpg" alt="Postre dulce" loading="lazy">
+          <div class="menu-card-body">
+            <div class="menu-card-top"><h3>Postre del día</h3><span class="price">$0.000</span></div>
+            <p>Un final dulce para cerrar la experiencia.</p>
+          </div>
+        </article>
+      </div>
+      <p class="note">Los platos y precios son ejemplos: reemplazalos por el menú real de El Fogón.</p>
+    </section>
+
+    <section class="section" id="nosotros">
+      <div class="about-grid">
+        <img class="about-image" src="img/restaurante.jpg" alt="Ambiente cálido de restaurante" loading="lazy">
+        <div class="about-copy">
+          <span class="section-label">Nuestra esencia</span>
+          <h2>El fuego nos reúne</h2>
+          <p>En El Fogón celebramos la tradición de la parrilla argentina: buenos ingredientes, sabores auténticos y momentos que se disfrutan sin apuro.</p>
+          <p>Vení con familia o amigos y hacé de cada comida una ocasión especial.</p>
+          <div class="about-points">
+            <div class="about-point"><strong>🔥 A las brasas</strong><span>Sabor y tradición</span></div>
+            <div class="about-point"><strong>🍽️ Para compartir</strong><span>Platos para disfrutar juntos</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section reservation-section" id="reservar">
+      <div class="reservation-wrap">
+        <div class="reservation-copy">
+          <span class="section-label">Tu mesa te espera</span>
+          <h2>Reservá en El Fogón</h2>
+          <p>Completá tus datos para preparar tu solicitud de reserva. Por ahora, este formulario muestra una confirmación de ejemplo; no envía datos al restaurante automáticamente.</p>
+          <div class="contact-list">
+            <div class="contact-row"><span aria-hidden="true">◷</span><div><strong>Horarios</strong>Martes a domingo, mediodía y noche</div></div>
+            <div class="contact-row"><span aria-hidden="true">⌖</span><div><strong>Estamos en</strong>Av. Eva Perón 123, Buenos Aires </div></div>
+            <div class="contact-row"><span aria-hidden="true">☎</span><div><strong>Consultas</strong>+54 000 0000-0000</div></div>
+          </div>
+        </div>
+        <form class="reservation-form" id="reservationForm">
+          <div class="field">
+            <label for="name">Nombre y apellido</label>
+            <input id="name" name="name" autocomplete="name" required placeholder="Tu nombre">
+          </div>
+          <div class="field">
+            <label for="phone">Teléfono</label>
+            <input id="phone" name="phone" type="tel" autocomplete="tel" required placeholder="Tu teléfono">
+          </div>
+          <div class="field">
+            <label for="date">Fecha</label>
+            <input id="date" name="date" type="date" required>
+          </div>
+          <div class="field">
+            <label for="time">Hora</label>
+            <select id="time" name="time" required>
+              <option value="">Elegí un horario</option>
+              <option>12:00</option><option>12:30</option><option>13:00</option><option>13:30</option><option>14:00</option>
+              <option>20:00</option><option>20:30</option><option>21:00</option><option>21:30</option><option>22:00</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="people">Cantidad de personas</label>
+            <select id="people" name="people" required>
+              <option value="">Elegí una opción</option>
+              <option>1 persona</option><option>2 personas</option><option>3 personas</option><option>4 personas</option>
+              <option>5 personas</option><option>6 personas</option><option>7 o más personas</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="occasion">Ocasión (opcional)</label>
+            <select id="occasion" name="occasion">
+              <option>Sin ocasión especial</option><option>Cumpleaños</option><option>Reunión familiar</option><option>Salida con amigos</option><option>Otra</option>
+            </select>
+          </div>
+          <div class="field full">
+            <label for="comments">Comentarios (opcional)</label>
+            <textarea id="comments" name="comments" rows="3" placeholder="¿Algún detalle que debamos saber?"></textarea>
+          </div>
+          <p class="form-message" id="formMessage" role="status" aria-live="polite"></p>
+          <button class="button button-primary" type="submit">Preparar solicitud</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer id="redes">
+    <div class="footer-brand">EL FOGÓN</div>
+    <p>Parrilla argentina · El sabor de encontrarnos</p>
+    <div class="socials">
+      <!-- Reemplazá los enlaces # por los perfiles reales del restaurante. -->
+      <a href="#" aria-label="Instagram de El Fogón">Instagram</a>
+      <a href="#" aria-label="Facebook de El Fogón">Facebook</a>
+      <a href="#" aria-label="TikTok de El Fogón">TikTok</a>
+    </div>
+    <p>© <span id="year"></span> El Fogón. Todos los derechos reservados.</p>
+  </footer>
+
+  <button class="back-top" id="backTop" aria-label="Volver al inicio" title="Volver al inicio">↑</button>
+
+  <script>
+    // Carrusel de cinco imágenes
+    const slides = Array.from(document.querySelectorAll('.slide'));
+    const dots = Array.from(document.querySelectorAll('.dot'));
+    const previousButton = document.getElementById('prevSlide');
+    const nextButton = document.getElementById('nextSlide');
+    const hero = document.querySelector('.hero');
+    let currentSlide = 0;
+    let carouselTimer;
+
+    function showSlide(index) {
+      currentSlide = (index + slides.length) % slides.length;
+      slides.forEach((slide, i) => slide.classList.toggle('active', i === currentSlide));
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlide);
+        dot.setAttribute('aria-current', i === currentSlide ? 'true' : 'false');
+      });
+    }
+    function startCarousel() {
+      clearInterval(carouselTimer);
+      carouselTimer = setInterval(() => showSlide(currentSlide + 1), 5000);
+    }
+    previousButton.addEventListener('click', () => { showSlide(currentSlide - 1); startCarousel(); });
+    nextButton.addEventListener('click', () => { showSlide(currentSlide + 1); startCarousel(); });
+    dots.forEach((dot, i) => dot.addEventListener('click', () => { showSlide(i); startCarousel(); }));
+    hero.addEventListener('mouseenter', () => clearInterval(carouselTimer));
+    hero.addEventListener('mouseleave', startCarousel);
+    hero.addEventListener('focusin', () => clearInterval(carouselTimer));
+    hero.addEventListener('focusout', startCarousel);
+    startCarousel();
+
+    // Menú desplegable en pantallas pequeñas
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav = document.getElementById('mainNav');
+    menuToggle.addEventListener('click', () => {
+      const isOpen = mainNav.classList.toggle('open');
+      menuToggle.setAttribute('aria-expanded', String(isOpen));
+      menuToggle.textContent = isOpen ? '✕ Cerrar' : '☰ Menú';
+    });
+    mainNav.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+      mainNav.classList.remove('open');
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.textContent = '☰ Menú';
+    }));
+
+    // Impide seleccionar fechas anteriores a hoy
+    const dateInput = document.getElementById('date');
+    const today = new Date();
+    const localToday = new Date(today.getTime() - today.getTimezoneOffset() * 60000).toISOString().split('T')[0];
+    dateInput.min = localToday;
+
+    // Formulario de demostración: no envía la reserva a un servidor
+    const reservationForm = document.getElementById('reservationForm');
+    const formMessage = document.getElementById('formMessage');
+    reservationForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      if (!reservationForm.reportValidity()) return;
+      const formData = new FormData(reservationForm);
+      const name = formData.get('name').trim();
+      const date = formData.get('date');
+      const time = formData.get('time');
+      const people = formData.get('people');
+      formMessage.textContent = `Gracias, ${name}. Tu solicitud de ejemplo es para el ${date} a las ${time} (${people}). Para confirmar la mesa, contactá directamente con el restaurante.`;
+      reservationForm.reset();
+      dateInput.min = localToday;
+    });
+
+    // Año actual y botón para volver arriba
+    document.getElementById('year').textContent = new Date().getFullYear();
+    const backTop = document.getElementById('backTop');
+    window.addEventListener('scroll', () => backTop.classList.toggle('visible', window.scrollY > 500));
+    backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+  </script>
+</body>
+</html>
